@@ -19,8 +19,21 @@ export const createApplication= async(req, res)=>{
 
 export const getApplications = async(req, res)=>{
     try{
-        const applications = await Application.find({userId:req.user._id}).sort({createdAt:-1});
-        res.status(200).json(applications);
+         const {status , search}= req.query;
+         const query={userId:req.user._id};
+         if(status){
+            query.status = status; // exact match
+            // query.status={$regex:status, $options:'i'}; 
+            // using exact match as it is faster then regex 
+         }
+         if(search){
+            query.$or=[
+                    {company: {$regex:search , $options:'i'}},
+                    {role: {$regex:search, $options:'i'}}
+                    ];
+        }
+        const application=await Application.find(query).sort({createdAt:-1});
+        res.status(200).json(application);
     }catch(err){
         res.status(500).json({message: `server error : ${err}`});
     }
