@@ -1,15 +1,15 @@
 import { Application } from "../models/Application.models.js";
-import { User } from "../models/User.models.js";
+import { createApplicationSchema } from "../validator/applicationValidator.js";
 
 export const createApplication= async(req, res)=>{
     try{
-        const {company, role, status, dateApplied , notes}=req.body;
-        if(!company || !role || !status || !dateApplied || !notes){
-            return res.status(400).json({message:"All feilds are required"});
+        const parsed= createApplicationSchema.safeParse(req.body);
+        if(!parsed.success){
+            return res.status(400).json({message:"validation failes", error:parsed.error.errors});
         }
         const application= await Application.create({
             userId:req.user._id,
-            company, role, status, dateApplied, notes 
+            ...parsed.data
         });
         res.status(201).json(application);
     }catch(err){
