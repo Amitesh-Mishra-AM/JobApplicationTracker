@@ -9,7 +9,7 @@ const generateToken= (userId)=>{
         {expiresIn: "7d"}
     );
 };
-
+/*
 export const registerUser= async(req, res)=>{
     try{
         const {name, email, password}= req.body;
@@ -41,6 +41,48 @@ export const registerUser= async(req, res)=>{
     }catch (err){
        return res.status(500).json({message:`Server error : ${err}`});
     }
+};
+*/
+// temmp below
+export const registerUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    console.log("User created:", user.email);
+    console.log("JWT SECRET:", process.env.JWT_SECRET);
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    console.error("REGISTER ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 export const loginUser= async(req, res)=>{

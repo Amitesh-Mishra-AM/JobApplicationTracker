@@ -1,18 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import AddApplication from "./pages/AddApplication";
 
+export default function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold text-blue-600">
-      Tailwind v4 is working
-    </h1>
-    </>
-  )
-}
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-export default App
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

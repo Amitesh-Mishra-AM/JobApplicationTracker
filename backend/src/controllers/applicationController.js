@@ -1,3 +1,4 @@
+// import App from "../../../Frontend/src/App.jsx";
 import { Application } from "../models/Application.models.js";
 import { createApplicationSchema } from "../validator/applicationValidator.js";
 
@@ -19,6 +20,7 @@ export const createApplication= async(req, res)=>{
 
 export const getApplications = async(req, res)=>{
     try{
+        // console.log("Logged in user:", req.user._id); // remove later 
         const page= parseInt(req.query.page) ||1;
         const limit = parseInt(req.query.limit) || 5;
         const skip= (page-1)*limit;
@@ -107,5 +109,23 @@ export const deleteApplication = async(req, res)=>{
         res.status(201).json({message:`Application deleted`});
     }catch(err){
         res.status(500).json({message:`server error : ${err}`});
+    }
+}
+
+export const getApplicationStats= async(req, res)=>{
+    try{
+        const userId= req.user._id;
+        const total= await Application.countDocuments({userId});
+        const applied= await Application.countDocuments({userId, status:"Applied"});
+        const interview= await Application.countDocuments({userId, status: "Interview"});
+        const offer= await Application.countDocuments({userId, status:"Offer"});
+        const rejected= await Application.countDocuments({userId , status:"Rejected"});
+
+        res.status(200).json({
+            total, applied, interview, offer, rejected
+        });
+
+    }catch(err){
+        res.status(500).json({message:"Server Error"});
     }
 }
