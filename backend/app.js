@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors({
     origin:[
         "http://localhost:5173",
-        "https://your-frontend-name.vercel.app"
+        "https://job-application-tracker-five-alpha.vercel.app"
     ],
     credentials:true
 }));
