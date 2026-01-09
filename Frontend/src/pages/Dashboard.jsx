@@ -79,14 +79,17 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchApplications(page);
-    fetchStats();
   }, []);
+
+
+ 
+
 
   useEffect(() => {
     fetchApplications(1);
   }, [search, statusFilter]);
 
-  // 👉 ADD APPLICATION
+  //  ADD APPLICATION
   const handleAddApplication = async (e) => {
     e.preventDefault();
     setError("");
@@ -133,6 +136,10 @@ export default function Dashboard() {
     }
   };
 
+   useEffect(()=>{
+    fetchStats();
+  },[handleAddApplication]);
+  
   return (
     <>
       <Navbar />
